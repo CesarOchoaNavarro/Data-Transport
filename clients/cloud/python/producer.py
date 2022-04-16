@@ -25,9 +25,15 @@
 from confluent_kafka import Producer, KafkaError
 import json
 import ccloud_lib
+import time
+import random
 
 
 if __name__ == '__main__':
+
+    #Open JSON File
+    file = open('bcsample.json')
+    data = json.load(file)
 
     # Read arguments and configurations and initialize
     args = ccloud_lib.parse_args()
@@ -44,6 +50,11 @@ if __name__ == '__main__':
 
     delivered_records = 0
 
+    #key= "12345"
+    key = ["1", "2", "3", "4", "5"]
+    key2 = random.choice(key)
+    print(key2)
+
     # Optional per-message on_delivery handler (triggered by poll() or flush())
     # when a message has been successfully delivered or
     # permanently failed delivery (after retries).
@@ -59,13 +70,23 @@ if __name__ == '__main__':
             print("Produced record to topic {} partition [{}] @ offset {}"
                   .format(msg.topic(), msg.partition(), msg.offset()))
 
-    for n in range(10):
-        record_key = "alice"
-        record_value = json.dumps({'count': n})
+    for n in data:
+        #Convert to INT
+        #int_key = int(key2)
+        #print(int_key, type(int_key))
+
+        #print(key2, type(key2))
+
+        record_key = random.choice(key)
+        record_value = json.dumps({'data': n})
         print("Producing record: {}\t{}".format(record_key, record_value))
         producer.produce(topic, key=record_key, value=record_value, on_delivery=acked)
         # p.poll() serves delivery reports (on_delivery)
         # from previous produce() calls.
+
+        #SLEEP
+        #time.sleep(0.25)
+
         producer.poll(0)
 
     producer.flush()

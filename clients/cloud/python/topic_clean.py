@@ -65,21 +65,18 @@ if __name__ == '__main__':
             else:
                 # Check for Kafka message
                 record_key = msg.key()
-                #print("RECORD KEY AND TYPE:\t", record_key, "\n", type(record_key))
+                record_value = msg.value()
+                data = json.loads(record_value)
+                #count = data['count']
+                total_count += count2
+                print("Consumed record with key {} and value {}, \
+                      and updated total count to {}"
+                      .format(record_key, record_value, total_count))
 
-                #conversion
-                int_val = int.from_bytes(record_key, "big")
-                #print(int_val)
-                
-                # 49=1, 50=2, 51=3, 52=4, 53=5
-                if(int_val == 50):
-                    record_value = msg.value()
-                    data = json.loads(record_value)
-                    #count = data['count']
-                    total_count += count2
-                    print("Consumed record with key {} and value {}, \
-                          and updated total count to {}"
-                        .format(record_key, record_value, total_count))
+                #Delete Records
+                del record_key
+                del record_value
+                del data
 
     except KeyboardInterrupt:
         pass
